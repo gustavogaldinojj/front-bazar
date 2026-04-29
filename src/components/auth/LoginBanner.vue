@@ -12,7 +12,7 @@
 <style scoped>
 .login-left {
   flex: 1;
-  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  background: linear-gradient(135deg, #2a74fd 0%, #2a5298 100%);
   color: white;
   display: flex;
   flex-direction: column;
