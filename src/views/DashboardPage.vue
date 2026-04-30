@@ -1,42 +1,29 @@
 <template>
-  <div class="dashboard-container">
-    <Sidebar />
+  <div class="dashboard-page">
+    <div class="content-header">
+      <h1>Dashboard</h1>
+      <p>Bem-vindo ao sistema de gestão de roupas</p>
+    </div>
 
-    <main class="main-content">
-      <div class="content-header">
-        <h1>Dashboard</h1>
-        <p>Bem-vindo ao sistema de gestão de roupas</p>
+    <div class="content-body">
+      <div class="welcome-card">
+        <h2>Login realizado com sucesso!</h2>
+        <p>Usuário: <strong>{{ authStore.user?.nome || 'N/A' }}</strong></p>
+        <p>Email: <strong>{{ authStore.user?.email || 'N/A' }}</strong></p>
       </div>
-
-      <div class="content-body">
-        <div class="welcome-card">
-          <h2>Login realizado com sucesso!</h2>
-          <p>Usuário: <strong>{{ authStore.user?.nome || 'N/A' }}</strong></p>
-          <p>Email: <strong>{{ authStore.user?.email || 'N/A' }}</strong></p>
-        </div>
-      </div>
-    </main>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useAuthStore } from '../stores/authStore'
-import Sidebar from '../components/layout/Sidebar.vue'
 
 const authStore = useAuthStore()
 </script>
 
 <style scoped>
-.dashboard-container {
-  display: flex;
-  min-height: 100vh;
-  background-color: #f5f5f5;
-}
-
-.main-content {
-  flex: 1;
-  margin-left: 280px; /* Largura do sidebar */
-  padding: 30px;
+.dashboard-page {
+  /* Estilos específicos da página */
 }
 
 .content-header {
@@ -86,11 +73,6 @@ const authStore = useAuthStore()
 
 /* Responsivo */
 @media (max-width: 768px) {
-  .main-content {
-    margin-left: 0;
-    padding: 20px;
-  }
-
   .content-header h1 {
     font-size: 24px;
   }
