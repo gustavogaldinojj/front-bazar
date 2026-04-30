@@ -136,6 +136,79 @@
       </div>
     </section>
   </div>
+
+  <div v-if="showModal" class="modal-overlay">
+  <div class="modal card">
+    <h2>Editar Usuário</h2>
+
+    <form class="user-form">
+
+      <label>Nome Completo</label>
+      <input type="text" v-model="formEdit.nome" />
+
+      <label>Email</label>
+      <input type="email" v-model="formEdit.email" />
+
+      <label>Senha</label>
+      <input type="password" placeholder="Nova senha (opcional)" v-model="formEdit.senha" />
+
+      <div class="grid-2">
+        <div>
+          <label>Perfil de Acesso</label>
+          <select v-model="formEdit.nivelUsuario">
+            <option value="VENDEDOR">Vendedor</option>
+            <option value="GERENTE">Gerente</option>
+            <option value="ADMIN">Admin</option>
+          </select>
+        </div>
+
+        <div>
+          <label>CEP</label>
+          <input type="text" v-model="formEdit.endereco.cep" />
+        </div>
+      </div>
+
+      <label>Logradouro</label>
+      <input type="text" v-model="formEdit.endereco.logradouro" />
+
+      <div class="grid-2">
+        <div>
+          <label>Número</label>
+          <input type="text" v-model="formEdit.endereco.numero" />
+        </div>
+        <div>
+          <label>Complemento</label>
+          <input type="text" v-model="formEdit.endereco.complemento" />
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <label>Bairro</label>
+          <input type="text" v-model="formEdit.endereco.bairro" />
+        </div>
+        <div>
+          <label>Cidade</label>
+          <input type="text" v-model="formEdit.endereco.cidade" />
+        </div>
+      </div>
+
+      <label>Estado (UF)</label>
+      <input type="text" maxlength="2" v-model="formEdit.endereco.uf" />
+
+      <div class="modal-actions">
+        <button type="button" @click="showModal = false">
+          Cancelar
+        </button>
+
+        <button type="button" class="btn-primary" @click="atualizarUsuario">
+          Salvar Alterações
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
 </template>
 
 <script setup lang="ts">
@@ -265,10 +338,64 @@ const cadastrar = async () => {
   }
 }
 
+const showModal = ref(false)
+const usuarioEditando = ref<Usuario | null>(null)
+
+const formEdit = ref<DadosCadastroUsuario>({
+  nome: '',
+  senha: '',
+  email: '',
+  nivelUsuario: 'VENDEDOR',
+  endereco: {
+    logradouro: '',
+    bairro: '',
+    cidade: '',
+    uf: '',
+    cep: '',
+    numero: '',
+    complemento: '' // 🔥 faltava isso
+  }
+})
+
 const editar = (usuario: Usuario) => {
-  // Implementar edição - pode abrir um modal ou redirecionar
-  console.log('✏️ [Gerenciamento] Editar usuário:', usuario)
-  // TODO: Implementar modal de edição
+
+  usuarioEditando.value = usuario
+
+  // Preenche o formulário com os dados do usuário
+  formEdit.value = {
+    nome: usuario.nome,
+    email: usuario.email,
+    senha: '', 
+    nivelUsuario: usuario.nivelUsuario,
+    endereco: {
+      logradouro: usuario.endereco?.logradouro || '',
+      bairro: usuario.endereco?.bairro || '',
+      cidade: usuario.endereco?.cidade || '',
+      uf: usuario.endereco?.uf || '',
+      cep: usuario.endereco?.cep || '',
+      numero: usuario.endereco?.numero || '',
+      complemento: usuario.endereco?.complemento || ''
+    }
+  }
+
+  showModal.value = true
+}
+
+const atualizarUsuario = async () => {
+  if (!usuarioEditando.value) return
+
+  try {    
+    await usuarioService.atualizar(usuarioEditando.value.id, formEdit.value)
+
+    console.log('✅ Usuário atualizado')
+
+    showModal.value = false
+    usuarioEditando.value = null
+
+    await carregarUsuarios()
+  } catch (error: any) {
+    erro.value = error.response?.data?.message || 'Erro ao atualizar usuário'
+  }
 }
 
 const excluir = async (id: number) => {
@@ -455,5 +582,33 @@ tbody tr:hover {
 .actions span { cursor: pointer; }
 @media (max-width: 1024px) {
   .content-grid { grid-template-columns: 1fr; }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal {
+  background: white;
+  padding: 28px;
+  border-radius: 24px;
+  width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
 </style>
