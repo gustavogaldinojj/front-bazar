@@ -25,6 +25,7 @@ export interface DadosAtualizaUsuario {
   nome?: string
   email?: string
   nivelUsuario?: string
+  endereco: DadosEndereco
 }
 
 export const usuarioService = {

@@ -97,10 +97,10 @@
           <h2>Usuários Cadastrados</h2>
           <input type="search" placeholder="Buscar usuários..." v-model="busca" />
         </div>
-
+<!-- 
         <div v-if="isLoading" class="loading">Carregando usuários...</div>
 
-        <div v-else-if="erro" class="error-message">{{ erro }}</div>
+        <div v-else-if="erro" class="error-message">{{ erro }}</div> -->
 
         <table>
           <thead>
@@ -148,9 +148,6 @@
 
       <label>Email</label>
       <input type="email" v-model="formEdit.email" />
-
-      <label>Senha</label>
-      <input type="password" placeholder="Nova senha (opcional)" v-model="formEdit.senha" />
 
       <div class="grid-2">
         <div>
@@ -213,7 +210,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { usuarioService, type DadosCadastroUsuario } from '../services/usuarioService'
+import { usuarioService, type DadosCadastroUsuario, type DadosAtualizaUsuario } from '../services/usuarioService'
 
 // Interfaces baseadas na API
 interface Usuario {
@@ -341,9 +338,8 @@ const cadastrar = async () => {
 const showModal = ref(false)
 const usuarioEditando = ref<Usuario | null>(null)
 
-const formEdit = ref<DadosCadastroUsuario>({
+const formEdit = ref<DadosAtualizaUsuario>({
   nome: '',
-  senha: '',
   email: '',
   nivelUsuario: 'VENDEDOR',
   endereco: {
@@ -353,19 +349,16 @@ const formEdit = ref<DadosCadastroUsuario>({
     uf: '',
     cep: '',
     numero: '',
-    complemento: '' // 🔥 faltava isso
+    complemento: ''
   }
 })
 
 const editar = (usuario: Usuario) => {
-
   usuarioEditando.value = usuario
 
-  // Preenche o formulário com os dados do usuário
   formEdit.value = {
     nome: usuario.nome,
     email: usuario.email,
-    senha: '', 
     nivelUsuario: usuario.nivelUsuario,
     endereco: {
       logradouro: usuario.endereco?.logradouro || '',
