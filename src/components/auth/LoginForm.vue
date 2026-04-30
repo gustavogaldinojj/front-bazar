@@ -78,27 +78,20 @@ const handleLogin = async () => {
   isLoading.value = true
 
   try {
-    console.log('🚀 [LoginForm] Chamando authStore.login...')
     const success = await authStore.login(form.value.email, form.value.senha)
-    console.log('✅ [LoginForm] authStore.login retornou:', success)
 
     if (success) {
-      console.log('🎯 [LoginForm] Login bem-sucedido, redirecionando para /dashboard...')
       await router.push('/dashboard')
-      console.log('🏠 [LoginForm] Redirecionamento executado')
     } else {
-      console.log('❌ [LoginForm] Login falhou, não redirecionando')
     }
   } catch (error) {
     console.error('💥 [LoginForm] Erro inesperado no handleLogin:', error)
   } finally {
     isLoading.value = false
-    console.log('🔄 [LoginForm] isLoading definido como false')
   }
 }
 
 const handleForgotPassword = () => {
-  console.log('🔗 [LoginForm] handleForgotPassword chamado')
   // Implementar lógica de recuperação de senha
 }
 </script>

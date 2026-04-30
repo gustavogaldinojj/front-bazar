@@ -33,6 +33,12 @@ const routes: RouteRecordRaw[] = [
   //   meta: { requiresAuth: true }
   // },
   {
+    path: '/gerenciamento',
+    name: 'Gerenciamento',
+    component: () => import('../views/GerenciamentoPage.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/',
     redirect: '/dashboard'
   }

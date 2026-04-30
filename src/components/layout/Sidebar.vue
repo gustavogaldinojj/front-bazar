@@ -7,7 +7,7 @@
 
     <nav class="sidebar-nav">
       <ul>
-          <li>
+        <li>
           <router-link to="/gerenciamento" class="nav-link" :class="{ active: $route.path === '/gerenciamento' }">
             <span class="text">Gerenciamento</span>
           </router-link>
@@ -209,6 +209,11 @@ const handleLogout = () => {
   font-weight: 500;
 }
 
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
 .btn-logout:hover {
   background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
   border-color: #ff0000;
