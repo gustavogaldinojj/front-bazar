@@ -380,8 +380,6 @@ const atualizarUsuario = async () => {
   try {    
     await usuarioService.atualizar(usuarioEditando.value.id, formEdit.value)
 
-    console.log('✅ Usuário atualizado')
-
     showModal.value = false
     usuarioEditando.value = null
 
@@ -395,9 +393,7 @@ const excluir = async (id: number) => {
   if (!confirm('Tem certeza que deseja excluir este usuário?')) return
 
   try {
-    console.log('🗑️ [Gerenciamento] Excluindo usuário ID:', id)
     await usuarioService.excluir(id)
-    console.log('✅ [Gerenciamento] Usuário excluído')
 
     // Recarregar lista
     await carregarUsuarios()
