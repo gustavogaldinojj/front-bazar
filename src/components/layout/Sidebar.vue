@@ -13,11 +13,6 @@
           </router-link>
         </li>
         <li>
-          <router-link to="/dashboard" class="nav-link" :class="{ active: $route.path === '/dashboard' }">
-            <span class="text">Dashboard</span>
-          </router-link>
-        </li>
-        <li>
           <router-link to="/produtos" class="nav-link" :class="{ active: $route.path === '/produtos' }">
             <span class="text">Produtos</span>
           </router-link>

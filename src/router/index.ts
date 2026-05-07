@@ -9,12 +9,6 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: false }
   },
   {
-    path: '/dashboard',
-    name: 'Dashboard',
-    component: () => import('../views/DashboardPage.vue'),
-    meta: { requiresAuth: true }
-  },
-  {
     path: '/produtos',
     name: 'Produtos',
     component: () => import('../views/ProdutosPage.vue'),
@@ -26,12 +20,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/VendasPage.vue'),
     meta: { requiresAuth: true }
   },
-  // {
-  //   path: '/relatorios',
-  //   name: 'Relatorios',
-  //   component: () => import('../views/RelatoriosPage.vue'),
-  //   meta: { requiresAuth: true }
-  // },
+  {
+    path: '/relatorios',
+    name: 'Relatórios',
+    component: () => import('../views/RelatoriosPage.vue'),
+    meta: { requiresAuth: true }
+  },
   {
     path: '/gerenciamento',
     name: 'Gerenciamento',

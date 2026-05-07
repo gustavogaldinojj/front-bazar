@@ -81,7 +81,7 @@ const handleLogin = async () => {
     const success = await authStore.login(form.value.email, form.value.senha)
 
     if (success) {
-      await router.push('/dashboard')
+      await router.push('/produtos')
     } else {
     }
   } catch (error) {
