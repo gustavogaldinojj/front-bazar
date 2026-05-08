@@ -11,12 +11,12 @@
       <div class="date-row">
         <label>
           Data Início
-          <input type="date" v-model="inicio" />
+          <input type="date" v-model="inicio" @change="carregarTotais" />
         </label>
 
         <label>
           Data Fim
-          <input type="date" v-model="fim" />
+          <input type="date" v-model="fim" @change="carregarTotais" />
         </label>
 
         <button class="btn-pdf" @click="gerarPdf">
@@ -46,17 +46,16 @@
         <label>
           Métrica
           <select v-model="metric">
-            <option value="vendas">Vendas (unidades)</option>
-            <option value="faturamento">Faturamento</option>
+            <option value="VENDAS">Vendas (unidades)</option>
+            <option value="FATURAMENTO">Faturamento</option>
           </select>
         </label>
 
         <label>
           Agrupamento
           <select v-model="groupBy">
-            <option value="mes">Por Mês</option>
-            <option value="dia">Por Dia</option>
-            <option value="produto">Por Produto</option>
+            <option value="MES">Por Mês</option>
+            <option value="DIA">Por Dia</option>
           </select>
         </label>
 
@@ -104,6 +103,7 @@
 
       <div v-else-if="chartData.datasets[0].data.length" class="chart-wrapper" :style="{ height: chartHeight + 'px' }">
         <component
+          ref="chartRef"
           :is="chartComponent"
           :data="chartData"
           :options="chartOptions"
@@ -118,7 +118,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted} from 'vue'
 import { Bar, Line, Pie } from 'vue-chartjs'
 import {
   Chart as ChartJS,
@@ -132,7 +132,9 @@ import {
   Legend,
   ArcElement
 } from 'chart.js'
-import { relatorioService, type DadosGrafico, type GraficoResponse } from '../services/relatorioService'
+import { relatorioService, type DadosGrafico} from '../services/relatorioService'
+
+import { gerarRelatorioPDF } from '../utils/relatorioPdf'
 
 ChartJS.register(
   CategoryScale,
@@ -150,14 +152,40 @@ const inicio = ref('2026-01-01')
 const fim = ref(new Date().toISOString().slice(0, 10))
 
 const chartType = ref<'bar' | 'line' | 'pie'>('bar')
-const metric = ref<'vendas' | 'faturamento' >('vendas')
-const groupBy = ref<'mes' | 'dia' | 'produto'>('mes')
+const metric = ref<'VENDAS' | 'FATURAMENTO'>('VENDAS')
+const groupBy = ref<'MES' | 'DIA'>('MES')
 
 const isLoading = ref(false)
 const error = ref('')
 
+const totalVendasValor = ref(0)
+const faturamentoTotalValor = ref(0)
+const isLoadingStats = ref(false)
+
 const chartLabels = ref<string[]>([])
 const chartValues = ref<number[]>([])
+const chartRef = ref()
+
+const carregarTotais = async () => {
+  isLoadingStats.value = true
+  try {
+    // Chama os dois endpoints em paralelo
+    const [vendas, faturamento] = await Promise.all([
+      relatorioService.totalVendido(),
+      relatorioService.faturamentoTotal()
+    ])
+    totalVendasValor.value = vendas.data ?? 0
+    faturamentoTotalValor.value = Number(faturamento.data) ?? 0
+  } catch (err) {
+    console.error('Erro ao carregar totais:', err)
+  } finally {
+    isLoadingStats.value = false
+  }
+}
+
+onMounted(() => {
+  carregarTotais()
+})
 
 const chartComponent = computed(() => {
   if (chartType.value === 'line') return Line
@@ -166,7 +194,7 @@ const chartComponent = computed(() => {
 })
 
 const chartLabel = computed(() => {
-  if (metric.value === 'faturamento') return 'Faturamento'
+  if (metric.value === 'FATURAMENTO') return 'Faturamento'
   return 'Vendas'
 })
 
@@ -205,17 +233,9 @@ const chartOptions = {
     }
   }
 
-const totalVendas = computed(() =>
-  metric.value === 'vendas'
-    ? chartValues.value.reduce((sum, value) => sum + value, 0)
-    : 0
-)
+const totalVendas = computed(() => totalVendasValor.value)
 
-const faturamentoTotal = computed(() =>
-  metric.value === 'faturamento'
-    ? chartValues.value.reduce((sum, value) => sum + value, 0)
-    : 0
-)
+const faturamentoTotal = computed(() => faturamentoTotalValor.value)
 
 const carregarGrafico = async () => {
   isLoading.value = true
@@ -224,26 +244,17 @@ const carregarGrafico = async () => {
   chartValues.value = []
 
   try {
-    let responseData: { labels: string[]; values: number[] } | DadosGrafico[] = { labels: [], values: [] }
+    const response = await relatorioService.grafico(
+      metric.value,
+      groupBy.value,
+      `${inicio.value}T00:00:00`,
+      `${fim.value}T23:59:59`
+    )
 
-    if (metric.value === 'vendas' && groupBy.value === 'mes') {
-      const response = await relatorioService.vendasPorMes()
-      responseData = response.data
-      chartLabels.value = responseData.map((item: DadosGrafico) => item.periodo)
-        chartValues.value = responseData.map(item => {
-          const valor = Number(item.total)
-          return isNaN(valor) ? 0 : valor
-        })    
-      } else {
-      const response = await relatorioService.grafico(
-        metric.value,
-        groupBy.value,
-        `${inicio.value}T00:00:00`,
-        `${fim.value}T23:59:59`
-      )
-      chartLabels.value = response.data.labels
-      chartValues.value = response.data.values
-    }
+    // backend retorna List<DadosGrafico> com { periodo, total }
+    chartLabels.value = response.data.map((item: DadosGrafico) => item.periodo)
+    chartValues.value = response.data.map((item: DadosGrafico) => Number(item.total))
+
   } catch (err: any) {
     error.value = err.response?.data?.message || 'Erro ao carregar gráfico'
   } finally {
@@ -252,7 +263,24 @@ const carregarGrafico = async () => {
 }
 
 const gerarPdf = () => {
-  window.print()
+
+  let graficoBase64 = ""
+
+  const charInstance = chartRef.value?.chart
+
+  if (charInstance) {
+    graficoBase64 = charInstance.toBase64Image()
+  }
+
+  gerarRelatorioPDF({
+    inicio: inicio.value,
+    fim: fim.value,
+    totalVendido: totalVendasValor.value,
+    faturamentoTotal: faturamentoTotalValor.value,
+    labels: chartLabels.value,
+    values: chartValues.value,
+    grafico: graficoBase64
+  })
 }
 
 const chartHeight = ref(300)

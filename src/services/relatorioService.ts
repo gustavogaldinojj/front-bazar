@@ -5,25 +5,30 @@ export interface DadosGrafico {
   total: number
 }
 
-export interface GraficoResponse {
-  labels: string[]
-  values: number[]
-}
-
 export const relatorioService = {
-  vendasPorMes: () =>
-    api.get<DadosGrafico[]>('/movimentacoes/relatorios/vendas-por-mes'),
+  totalVendido: () =>
+    api.get<number>('/movimentacoes/relatorios/total-vendido'),
 
-  resumo: (inicio: string, fim: string) =>
-    api.get('/movimentacoes/relatorios/resumo', { params: { inicio, fim } }),
+  faturamentoTotal: () =>
+    api.get<number>('/movimentacoes/relatorios/faturamento'),
+
+  totalVendidoPorPeriodo: (inicio: string, fim: string) =>
+    api.get<number>('/movimentacoes/relatorios/por-periodo', {
+      params: { inicio, fim }
+    }),
+
+  faturamentoPorPeriodo: (inicio: string, fim: string) =>
+    api.get<number>('/movimentacoes/relatorios/faturamento/por-periodo', {
+      params: { inicio, fim }
+    }),
 
   grafico: (
-    tipo: 'vendas' | 'faturamento' | 'ticket',
-    agrupamento: 'dia' | 'mes' | 'produto',
+    tipo: 'VENDAS' | 'FATURAMENTO',
+    agrupamento: 'DIA' | 'MES',
     inicio: string,
     fim: string
   ) =>
-    api.get<GraficoResponse>('/movimentacoes/relatorios/grafico', {
+    api.get<DadosGrafico[]>('/movimentacoes/relatorios/grafico', {
       params: { tipo, agrupamento, inicio, fim }
     })
 }
