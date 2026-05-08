@@ -71,9 +71,6 @@ const form = ref<LoginForm>({
 const isLoading = ref(false)
 
 const handleLogin = async () => {
-  console.log('🔐 [LoginForm] handleLogin chamado')
-  console.log('📧 Email:', form.value.email)
-  console.log('🔑 Senha: [OCULTA]')
 
   isLoading.value = true
 

@@ -56,7 +56,6 @@ export const useAuthStore = defineStore('auth', () => {
         nome: payload.sub.split('@')[0], // Usar parte do email como nome temporário
         role: 'user' // Role padrão
       }
-      console.log('👤 [AuthStore] User criado:', responseUser)
 
       // Salvar no store
       token.value = responseToken

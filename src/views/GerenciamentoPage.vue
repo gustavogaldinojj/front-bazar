@@ -287,9 +287,7 @@ const carregarUsuarios = async () => {
   erro.value = ''
 
   try {
-    console.log('🔄 [Gerenciamento] Carregando usuários...')
     const response = await usuarioService.listar()
-    console.log('✅ [Gerenciamento] Usuários carregados:', response.data)
 
     // Ajuste conforme a estrutura da resposta da API
     usuarios.value = response.data.content || response.data || []
@@ -305,9 +303,7 @@ const cadastrar = async () => {
   isSubmitting.value = true
 
   try {
-    console.log('🔄 [Gerenciamento] Cadastrando usuário...')
     await usuarioService.cadastrar(form.value)
-    console.log('✅ [Gerenciamento] Usuário cadastrado com sucesso')
 
     // Limpar formulário
     form.value = {

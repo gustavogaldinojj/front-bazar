@@ -141,12 +141,10 @@ const carregarDados = async () => {
     // Carregar movimentações
     const movResponse = await vendaService.listar()
     movimentacoes.value = movResponse.data || []
-    console.log('✅ [Vendas] Movimentações carregadas:', movimentacoes.value)
 
     // Carregar produtos
     const prodResponse = await produtoService.listar(0, 100)
     produtos.value = prodResponse.data.content || prodResponse.data || []
-    console.log('✅ [Vendas] Produtos carregados:', produtos.value)
 
     // Carregar relatórios
     await carregarRelatorios()
@@ -160,7 +158,6 @@ const carregarDados = async () => {
 
 const carregarRelatorios = async () => {
   try {
-    console.log('🔄 [Vendas] Carregando relatórios...')
 
     // Total vendido
     const totalResponse = await vendaService.relatorios.totalVendido()
@@ -170,7 +167,6 @@ const carregarRelatorios = async () => {
     const faturResponse = await vendaService.relatorios.faturamentoTotal()
     faturamentoTotal.value = parseFloat(faturResponse.data) || 0
 
-    console.log('✅ [Vendas] Relatórios carregados')
   } catch (error: any) {
     console.error('❌ [Vendas] Erro ao carregar relatórios:', error)
   }
@@ -192,7 +188,6 @@ const registrarVenda = async () => {
   erro.value = ''
 
   try {
-    console.log('🔄 [Vendas] Registrando venda...', form.value)
 
     await vendaService.registrar({
       roupaId: form.value.roupaId,
@@ -200,7 +195,6 @@ const registrarVenda = async () => {
       quantidade: form.value.quantidade
     })
 
-    console.log('✅ [Vendas] Venda registrada com sucesso')
 
     // Limpar formulário
     form.value = {
