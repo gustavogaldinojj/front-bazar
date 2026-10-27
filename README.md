@@ -76,3 +76,10 @@ Certifique-se de que a API esteja rodando corretamente para o funcionamento comp
 - Dashboard com gráficos 📊
 
 
+## Contribuidores
+
+- Victor de Goes Galasso     RA: G80AAJ0
+- Gustavo Alves Oliveira     RA: N08AJ5
+- Isabella Victorino dos Santos     RA: N094419
+- Guilherme Dias da Silva     RA: G863DJ0
+
